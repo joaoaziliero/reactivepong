@@ -13,6 +13,6 @@ public class GameplayParameters : ScriptableObject
 
     private GameplayParameters()
     {
-        BallSpeed = () => _ballSpeed;
+        BallSpeed = () => new Vector2(Mathf.Abs(_ballSpeed.x), Mathf.Abs(_ballSpeed.y));
     }
 }
