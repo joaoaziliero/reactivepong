@@ -12,7 +12,7 @@ public class BallMotion : MonoBehaviour
     private Collider2D _collider;
     private Rigidbody2D _rigidBody;
 
-    [Header("Gameplay Parameters")]
+    [Header("Gameplay parameters")]
     [SerializeField] private GameplayParameters _parameters;
 
     private void Awake()
