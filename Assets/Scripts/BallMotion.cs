@@ -42,13 +42,13 @@ public class BallMotion : MonoBehaviour
             .Select(ballFlip => ballFlip.VectorModifier.Invoke())
             .Select(modifier =>
             {
-                var normVel = rb.velocity.normalized;
-                var normPos = rb.position.normalized;
+                var unitVel = new Vector2(Mathf.Sign(rb.velocity.x), Mathf.Sign(rb.velocity.y));
+                var unitPos = new Vector2(Mathf.Sign(rb.position.x), Mathf.Sign(rb.position.y));
 
                 return modifier switch
                 {
-                    (+1, -1) => new Vector2((+1) * normVel.x * ballSpeed.x, (-1) * normPos.y * ballSpeed.y),
-                    (-1, +1) => new Vector2((-1) * normPos.x * ballSpeed.x, (+1) * normVel.y * ballSpeed.y),
+                    (+1, -1) => new Vector2((+1) * unitVel.x * ballSpeed.x, (-1) * unitPos.y * ballSpeed.y),
+                    (-1, +1) => new Vector2((-1) * unitPos.x * ballSpeed.x, (+1) * unitVel.y * ballSpeed.y),
                     _ => Vector2.zero,
                 };
             })
