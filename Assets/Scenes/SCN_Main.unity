@@ -502,6 +502,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 4336112088771942880, guid: 5e69ec373367325459b357ea9520ce99, type: 3}
+      propertyPath: m_Constraints
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4336112088771942880, guid: 5e69ec373367325459b357ea9520ce99, type: 3}
       propertyPath: m_SleepingMode
       value: 1
       objectReference: {fileID: 0}
