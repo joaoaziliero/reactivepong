@@ -23,22 +23,21 @@ public class PlayerMotionControl : MonoBehaviour
 
     private void Start()
     {
-        ManageAxisInput(transform, _parameters.PlayerPaddleSpeed.Invoke()).AddTo(_compositeDisposable);
+        ManageAxisInput(transform, _parameters.PlayerPaddleSpeed.Invoke(), () => Input.GetAxis("Vertical"))
+            .AddTo(_compositeDisposable);
     }
 
-    private IDisposable ManageAxisInput(Transform playerPaddle, float playerPaddleSpeed)
+    private IDisposable ManageAxisInput(Transform playerPaddle, float paddleSpeed, Func<float> AxisInput)
     {
         return Observable
             .EveryUpdate()
-            .Subscribe(_ =>
+            .Select<long, Action>(_ =>
             {
-                var updatedPosition =
-                    playerPaddle.position
-                    + Input.GetAxis("Vertical") * playerPaddleSpeed * Time.deltaTime * Vector3.up;
-                updatedPosition.y = Mathf.Clamp(updatedPosition.y, -4.5f, +4.5f);
-
-                playerPaddle.position = updatedPosition;
-            });
+                var currentPos = playerPaddle.position;
+                var y = Mathf.Clamp(currentPos.y + AxisInput.Invoke() * paddleSpeed * Time.deltaTime, -4.5f, +4.5f);
+                return () => { playerPaddle.position = new Vector3(currentPos.x, y, 0); };
+            })
+            .Subscribe(action => action.Invoke());
     }
 
     private void OnDestroy()

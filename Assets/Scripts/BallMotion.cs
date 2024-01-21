@@ -31,39 +31,33 @@ public class BallMotion : MonoBehaviour
 
     private void Start()
     {
-        ManageCollisions(_collider, _rigidBody, _parameters.BallSpeed.Invoke()).AddTo(_compositeDisposable);
+        ManageCollisions(_collider, _rigidBody, _parameters.BallSpeed.Invoke(), _parameters.BallSM.Invoke())
+            .AddTo(_compositeDisposable);
     }
 
-    private IDisposable ManageCollisions(Collider2D col, Rigidbody2D rb, Vector2 ballSpeed)
+    private IDisposable ManageCollisions(Collider2D col, Rigidbody2D rb, Vector2 ballSpeed, float speedMultiplier)
     {
         return col.OnTriggerEnter2DAsObservable()
             .Select(trigger => trigger.gameObject.GetComponent<BallMotionFlip>())
             .Where(component => component != null)
             .Select(ballFlip => ballFlip.VectorModifier.Invoke())
-            .Select(modifier =>
+            .Select<(int, int), Action>(modifier =>
             {
+                var absVel = new Vector2(Mathf.Abs(rb.velocity.x), Mathf.Abs(rb.velocity.y));
                 var unitVel = new Vector2(Mathf.Sign(rb.velocity.x), Mathf.Sign(rb.velocity.y));
                 var unitPos = new Vector2(Mathf.Sign(rb.position.x), Mathf.Sign(rb.position.y));
 
                 return modifier switch
                 {
-                    (+1, -1) => new Vector2(modifier.x * unitVel.x * ballSpeed.x, modifier.y * unitPos.y * ballSpeed.y),
-                    (-1, +1) => new Vector2(modifier.x * unitPos.x * ballSpeed.x, modifier.y * unitVel.y * ballSpeed.y),
-                    _ => Vector2.zero,
+                    (+1, -1) => () => { rb.velocity = speedMultiplier * new Vector2((+1) * unitVel.x * absVel.x, (-1) * unitPos.y * absVel.y); }
+                    ,
+                    (-1, +1) => () => { rb.velocity = speedMultiplier * new Vector2((-1) * unitPos.x * absVel.x, (+1) * unitVel.y * absVel.y); }
+                    ,
+                    _ => () => { rb.velocity = ballSpeed; rb.position = Vector2.zero; }
+                    ,
                 };
             })
-            .Subscribe(updatedVector =>
-            {
-                if (updatedVector != Vector2.zero)
-                {
-                    rb.velocity = updatedVector;
-                }
-                else
-                {
-                    rb.position = updatedVector;
-                    rb.velocity = ballSpeed;
-                }
-            });
+            .Subscribe(action => action.Invoke());
     }
 
     private void OnDestroy()
