@@ -36,8 +36,8 @@ public class BallMotion : MonoBehaviour
 
     private IDisposable ManageCollisions(Collider2D col, Rigidbody2D rb, Vector2 ballSpeed)
     {
-        return col.OnCollisionEnter2DAsObservable()
-            .Select(collision => collision.gameObject.GetComponent<BallMotionFlip>())
+        return col.OnTriggerEnter2DAsObservable()
+            .Select(trigger => trigger.gameObject.GetComponent<BallMotionFlip>())
             .Where(component => component != null)
             .Select(ballFlip => ballFlip.VectorModifier.Invoke())
             .Select(modifier =>
@@ -47,8 +47,8 @@ public class BallMotion : MonoBehaviour
 
                 return modifier switch
                 {
-                    (+1, -1) => new Vector2((+1) * unitVel.x * ballSpeed.x, (-1) * unitPos.y * ballSpeed.y),
-                    (-1, +1) => new Vector2((-1) * unitPos.x * ballSpeed.x, (+1) * unitVel.y * ballSpeed.y),
+                    (+1, -1) => new Vector2(modifier.x * unitVel.x * ballSpeed.x, modifier.y * unitPos.y * ballSpeed.y),
+                    (-1, +1) => new Vector2(modifier.x * unitPos.x * ballSpeed.x, modifier.y * unitVel.y * ballSpeed.y),
                     _ => Vector2.zero,
                 };
             })
