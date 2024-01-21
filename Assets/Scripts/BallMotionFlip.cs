@@ -5,7 +5,7 @@ using System;
 
 public class BallMotionFlip : MonoBehaviour
 {
-    public Func<(int x, int y)> VectorModifier { get; }
+    public Func<(int, int)> VectorModifier { get; }
 
     [Header("Vector flip factors")]
     [SerializeField] private int xFactor;
