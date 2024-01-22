@@ -16,3 +16,4 @@ MonoBehaviour:
   _ballSM: 1.0125
   _playerPaddleSpeed: 5
   _enemyPaddleSpeed: 4.5
+  _maxPoints: 10
