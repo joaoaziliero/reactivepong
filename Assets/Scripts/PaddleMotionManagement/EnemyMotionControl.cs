@@ -43,4 +43,9 @@ public class EnemyMotionControl : MonoBehaviour
             })
             .Subscribe(action => action.Invoke());
     }
+
+    private void OnDestroy()
+    {
+        _compositeDisposable.Dispose();
+    }
 }
