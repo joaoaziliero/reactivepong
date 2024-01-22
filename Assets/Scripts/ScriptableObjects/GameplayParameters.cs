@@ -10,6 +10,7 @@ public class GameplayParameters : ScriptableObject
     public Func<float> BallSM { get; }
     public Func<float> PlayerPaddleSpeed { get; }
     public Func<float> EnemyPaddleSpeed { get; }
+    public Func<int> MaxPoints { get; }
     
     [Header("Ball speed")]
     [SerializeField] private Vector2 _ballSpeed;
@@ -19,6 +20,8 @@ public class GameplayParameters : ScriptableObject
     [SerializeField] private float _playerPaddleSpeed;
     [Header("Enemy speed")]
     [SerializeField] private float _enemyPaddleSpeed;
+    [Header("Max. points before reset")]
+    [SerializeField] private int _maxPoints;
 
     private GameplayParameters()
     {
@@ -26,5 +29,6 @@ public class GameplayParameters : ScriptableObject
         BallSM = () => _ballSM;
         PlayerPaddleSpeed = () => Mathf.Abs(_playerPaddleSpeed);
         EnemyPaddleSpeed = () => Mathf.Abs(_enemyPaddleSpeed);
+        MaxPoints = () => _maxPoints;
     }
 }
