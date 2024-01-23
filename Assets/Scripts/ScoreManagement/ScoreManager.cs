@@ -46,20 +46,15 @@ public class ScoreManager : MonoBehaviour
                 var score = int.Parse(textField.text);
                 var opposingScore = int.Parse(opposingField.text);
 
-                if (score < maxPoints && opposingScore < maxPoints)
+                return (score, opposingScore) switch
                 {
-                    return () => { textField.text = (score + 1).ToString(); };
-                    //return () =>
-                    //{
-                    //    var newScore = score + 1;
-                    //    textField.text = newScore.ToString();
-                    //    if (newScore == maxPoints) opposingField.text = 0.ToString();
-                    //};
-                }
-                else
-                {
-                    return () => { textField.text = 1.ToString(); opposingField.text = 0.ToString(); };
-                }
+                    var tuple when tuple.score == maxPoints => () => { textField.text = 1.ToString(); opposingField.text = 0.ToString(); }
+                    ,
+                    var tuple when tuple.opposingScore == maxPoints => () => { textField.text = 1.ToString(); opposingField.text = 0.ToString(); }
+                    ,
+                    _ => () => { textField.text = (score + 1).ToString(); }
+                    ,
+                };
             })
             .Subscribe(action => action.Invoke());
     }
