@@ -6,7 +6,6 @@ using UniRx;
 using UniRx.Triggers;
 using System;
 using System.Linq;
-using UnityEngine.SceneManagement;
 
 public class ScoreManager : MonoBehaviour
 {
