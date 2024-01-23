@@ -39,45 +39,33 @@ public class ScoreManager : MonoBehaviour
 
     private IDisposable TrackScore(Collider2D thisCollider, int maxPoints, TextMeshProUGUI textField, TextMeshProUGUI opposingField)
     {
-        return thisCollider.OnTriggerEnter2DAsObservable()
+        return thisCollider
+            .OnTriggerEnter2DAsObservable()
             .Where(thatCollider => thatCollider.gameObject.CompareTag("Ball"))
-            .Select(collision => 1)
-            .Scan((id: 0, acc: 0), (tuple, increment) =>
+            .Select<Collider2D, Action>(collision =>
             {
-                var totalScore = tuple.acc + increment;
+                var score = int.Parse(textField.text);
+                var opposingScore = int.Parse(opposingField.text);
 
-                return totalScore switch
+                if (score < maxPoints && opposingScore < maxPoints)
                 {
-                    var value when value == maxPoints => (1, 0),
-                    _ => (0, totalScore),
-                };
-            })
-            .Select<(int id, int acc), Action>(tuple =>
-            {
-                return tuple.id switch
-                {
-                    1 => () =>
+                    return () =>
                     {
-                        textField.text = maxPoints.ToString();
-                        opposingField.text = (0).ToString();
-                        StartCoroutine(ReloadGame());
-                    }
-                    ,
-                    _ => () => { textField.text = tuple.acc.ToString(); }
-                };
+                        var newScore = score + 1;
+                        textField.text = newScore.ToString();
+                        if (newScore == maxPoints) opposingField.text = 0.ToString();
+                    };
+                }
+                else
+                {
+                    return () => { textField.text = 1.ToString(); opposingField.text = 0.ToString(); };
+                }
             })
             .Subscribe(action => action.Invoke());
     }
 
-    private IEnumerator ReloadGame(string sceneName = "SCN_Main", float timeBeforeReload = 1)
-    {
-        yield return new WaitForSeconds(timeBeforeReload);
-        SceneManager.LoadScene(sceneName);
-    }
-
     private void OnDestroy()
     {
-        StopCoroutine(ReloadGame());
         _compositeDisposable.Dispose();
     }
 }
