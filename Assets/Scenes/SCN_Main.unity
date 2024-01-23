@@ -165,6 +165,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PFB_Paddle_Left
       objectReference: {fileID: 0}
+    - target: {fileID: 3783010260757139474, guid: 064db70d1c7c7a544a0cbf9bb3d1b539, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3783010260757139484, guid: 064db70d1c7c7a544a0cbf9bb3d1b539, type: 3}
       propertyPath: m_RootOrder
       value: 6
@@ -543,6 +547,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _parameters: {fileID: 11400000, guid: 54a6af3611f97f24abfb4a827d203de0, type: 2}
+  _display: {fileID: 0}
   _textField: {fileID: 1961750749}
   _opposingTextField: {fileID: 984844204}
 --- !u!1001 &1581538908
@@ -624,6 +629,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _parameters: {fileID: 11400000, guid: 54a6af3611f97f24abfb4a827d203de0, type: 2}
+  _display: {fileID: 0}
   _textField: {fileID: 984844204}
   _opposingTextField: {fileID: 1961750749}
 --- !u!1001 &1687290477
