@@ -48,12 +48,13 @@ public class ScoreManager : MonoBehaviour
 
                 if (score < maxPoints && opposingScore < maxPoints)
                 {
-                    return () =>
-                    {
-                        var newScore = score + 1;
-                        textField.text = newScore.ToString();
-                        if (newScore == maxPoints) opposingField.text = 0.ToString();
-                    };
+                    return () => { textField.text = (score + 1).ToString(); };
+                    //return () =>
+                    //{
+                    //    var newScore = score + 1;
+                    //    textField.text = newScore.ToString();
+                    //    if (newScore == maxPoints) opposingField.text = 0.ToString();
+                    //};
                 }
                 else
                 {
