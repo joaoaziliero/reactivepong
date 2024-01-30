@@ -10,6 +10,8 @@ public class PlayerMotionControl : MonoBehaviour
 
     [Header("Gameplay parameters")]
     [SerializeField] private GameplayParameters _parameters;
+    [Header("Specify vertical axis input")]
+    [SerializeField] private string _verticalAxis;
 
     private void Awake()
     {
@@ -23,7 +25,7 @@ public class PlayerMotionControl : MonoBehaviour
 
     private void Start()
     {
-        ManageAxisInput(transform, _parameters.PlayerPaddleSpeed.Invoke(), () => Input.GetAxis("Vertical"))
+        ManageAxisInput(transform, _parameters.PlayerPaddleSpeed.Invoke(), () => Input.GetAxis(_verticalAxis))
             .AddTo(_compositeDisposable);
     }
 
