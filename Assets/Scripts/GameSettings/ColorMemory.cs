@@ -7,25 +7,25 @@ using System;
 public class ColorMemory : ScriptableObject
 {
     [SerializeField] private string _leftPlayerTag;
-    public Color _leftPlayerColor = Color.white;
+    public Color leftPlayerColor = Color.white;
     [SerializeField] private string _rightPlayerTag;
-    public Color _rightPlayerColor = Color.white;
+    public Color rightPlayerColor = Color.white;
 
     public void SetColor(string playerTag, Color color)
     {
         if (playerTag == _leftPlayerTag)
         {
-            _leftPlayerColor = color;
+            leftPlayerColor = color;
         }
         else if (playerTag == _rightPlayerTag)
         {
-            _rightPlayerColor = color;
+            rightPlayerColor = color;
         }
     }
 
     public void ResetColors()
     {
-        _leftPlayerColor = Color.white;
-        _rightPlayerColor = Color.white;
+        leftPlayerColor = Color.white;
+        rightPlayerColor = Color.white;
     }
 }
