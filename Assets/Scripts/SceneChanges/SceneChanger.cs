@@ -7,14 +7,14 @@ using UniRx;
 using System;
 using System.Linq;
 
-public class MainSceneTransition : MonoBehaviour
+public class SceneChanger : MonoBehaviour
 {
     private CompositeDisposable _compositeDisposable;
 
-    [Header("Play button reference")]
-    [SerializeField] private Button _playButton;
-    [Header("Main scene name reference")]
-    [SerializeField] private string _mainSceneName;
+    [Header("Button reference")]
+    [SerializeField] private Button _button;
+    [Header("Scene name reference")]
+    [SerializeField] private string _sceneName;
 
     private void Awake()
     {
@@ -28,14 +28,14 @@ public class MainSceneTransition : MonoBehaviour
 
     private void Start()
     {
-        ManageSceneChange(_playButton, _mainSceneName)
+        ManageSceneChange(_button, _sceneName)
             .AddTo(_compositeDisposable);
     }
 
-    private IDisposable ManageSceneChange(Button playButton, string mainSceneName)
+    private IDisposable ManageSceneChange(Button button, string sceneName)
     {
-        return playButton.OnClickAsObservable()
-            .Select<Unit, Action>(_ => () => { SceneManager.LoadScene(mainSceneName); })
+        return button.OnClickAsObservable()
+            .Select<Unit, Action>(_ => () => { SceneManager.LoadScene(sceneName); })
             .Subscribe(action => action.Invoke());
     }
 

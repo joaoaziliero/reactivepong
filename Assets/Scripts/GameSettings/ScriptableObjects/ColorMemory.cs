@@ -7,9 +7,9 @@ using System;
 public class ColorMemory : ScriptableObject
 {
     [SerializeField] private string _leftPlayerTag;
-    public Color leftPlayerColor = Color.white;
+    public Color leftPlayerColor;
     [SerializeField] private string _rightPlayerTag;
-    public Color rightPlayerColor = Color.white;
+    public Color rightPlayerColor;
 
     public void SetColor(string playerTag, Color color)
     {

@@ -27,7 +27,6 @@ public class PlayerColorSelector : MonoBehaviour
         }
 
         _compositeDisposable = new CompositeDisposable();
-        _colorMemory.ResetColors();
     }
 
     private void Start()
