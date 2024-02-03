@@ -4,31 +4,27 @@ using UnityEngine;
 using System;
 
 [CreateAssetMenu]
-public class GameplayParameters : ScriptableObject
+public class SO_GameplayParameters : ScriptableObject
 {
     public Func<Vector2> BallSpeed { get; }
-    public Func<float> BallSM { get; }
+    public Func<float> BallSpeedMultiplier { get; }
     public Func<float> PlayerPaddleSpeed { get; }
-    public Func<float> EnemyPaddleSpeed { get; }
     public Func<int> MaxPoints { get; }
     
     [Header("Ball speed")]
     [SerializeField] private Vector2 _ballSpeed;
     [Header("Ball speed multiplier")]
-    [SerializeField] private float _ballSM;
+    [SerializeField] private float _ballSpeedMultiplier;
     [Header("Player speed")]
     [SerializeField] private float _playerPaddleSpeed;
-    [Header("Enemy speed")]
-    [SerializeField] private float _enemyPaddleSpeed;
     [Header("Max. points before reset")]
     [SerializeField] private int _maxPoints;
 
-    private GameplayParameters()
+    private SO_GameplayParameters()
     {
-        BallSpeed = () => new Vector2(Mathf.Abs(_ballSpeed.x), Mathf.Abs(_ballSpeed.y));
-        BallSM = () => _ballSM;
+        BallSpeed = () => _ballSpeed;
+        BallSpeedMultiplier = () => Mathf.Abs(_ballSpeedMultiplier);
         PlayerPaddleSpeed = () => Mathf.Abs(_playerPaddleSpeed);
-        EnemyPaddleSpeed = () => Mathf.Abs(_enemyPaddleSpeed);
-        MaxPoints = () => _maxPoints;
+        MaxPoints = () => Mathf.Abs(_maxPoints);
     }
 }

@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: SO_GameplayParameters
   m_EditorClassIdentifier: 
   _ballSpeed: {x: 5, y: 5}
-  _ballSM: 1.0125
-  _playerPaddleSpeed: 5
-  _enemyPaddleSpeed: 4.5
-  _maxPoints: 10
+  _ballSpeedMultiplier: 0
+  _playerPaddleSpeed: 0
+  _maxPoints: 0
