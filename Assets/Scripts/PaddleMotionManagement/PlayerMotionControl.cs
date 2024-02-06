@@ -27,26 +27,26 @@ public class PlayerMotionControl : MonoBehaviour
     {
         ManageAxisInput(_leftmostPlayerTransform,
             _gameplayParameters.PlayerPaddleSpeed.Invoke(),
-            Input.GetAxis, _gameplayParameters.LeftmostPlayerAxisName.Invoke())
-            .AddTo(_compositeDisposable);
+            Input.GetAxis, _gameplayParameters.LeftmostPlayerAxisName.Invoke(),
+            _compositeDisposable);
         ManageAxisInput(_rightmostPlayerTransform,
             _gameplayParameters.PlayerPaddleSpeed.Invoke(),
-            Input.GetAxis, _gameplayParameters.RightmostPlayerAxisName.Invoke())
-            .AddTo(_compositeDisposable);
+            Input.GetAxis, _gameplayParameters.RightmostPlayerAxisName.Invoke(),
+            _compositeDisposable);
     }
 
-    private IDisposable ManageAxisInput(Transform playerPaddle, float paddleSpeed, Func<string, float> GetAxis, string AxisName)
+    private void ManageAxisInput(Transform playerPaddle, float paddleSpeed, Func<string, float> GetAxis, string AxisName, CompositeDisposable disposables)
     {
-        return Observable
-            .EveryUpdate()
-            .AsUnitObservable()
-            .Select<Unit, Action>(_ =>
+        Observable.EveryUpdate().Subscribe(_ => GetAxis(AxisName)).AddTo(disposables);
+
+        GetAxis.ObserveEveryValueChanged(InputFunction => Time.deltaTime * InputFunction(AxisName))
+            .Select<float, Action>(processedInput =>
             {
                 var currentPos = playerPaddle.position;
-                var y = Mathf.Clamp(currentPos.y + paddleSpeed * Time.deltaTime * GetAxis(AxisName), -4.5f, +4.5f);
+                var y = Mathf.Clamp(currentPos.y + paddleSpeed * processedInput, -4.5f, +4.5f);
                 return () => { playerPaddle.position = new Vector3(currentPos.x, y, 0); };
             })
-            .Subscribe(action => action.Invoke());
+            .Subscribe(action => action.Invoke()).AddTo(disposables);
     }
 
     private void OnDestroy()
