@@ -29,56 +29,11 @@ public class BallMotionControl : MonoBehaviour
 
     private void Start()
     {
-        //ManageCollisions(_collider, _rigidBody, _gameplayParameters.BallSpeedMultiplier.Invoke())
-        //    .AddTo(_compositeDisposable);
-        //ManageTeleport(_collider, _rigidBody, _gameplayParameters.BallSpeed.Invoke())
-        //    .AddTo(_compositeDisposable);
-
-        Test(_collider, _rigidBody, _gameplayParameters.BallSpeed.Invoke(), _gameplayParameters.BallSpeedMultiplier.Invoke())
+        ManageCollisions(_collider, _rigidBody, _gameplayParameters.BallSpeed.Invoke(), _gameplayParameters.BallSpeedMultiplier.Invoke())
             .AddTo(_compositeDisposable);
     }
 
-    private IDisposable ManageCollisions(Collider2D trigger, Rigidbody2D rb, float speedMultiplier)
-    {
-        return trigger.OnTriggerEnter2DAsObservable()
-            .Where(collider => !collider.isTrigger)
-            .Select(collider => Mathf.Abs(collider.transform.rotation.eulerAngles.z))
-            .Select<float, Action>(orthogonality =>
-            {
-                var unitPos = new Vector2(Mathf.Sign(rb.position.x), Mathf.Sign(rb.position.y));
-
-                return orthogonality switch
-                {
-                    0 => () => { rb.velocity = speedMultiplier * new Vector2(rb.velocity.x, (-1) * unitPos.y * Mathf.Abs(rb.velocity.y)); }
-                    ,
-                    90 => () => { rb.velocity = speedMultiplier * new Vector2((-1) * unitPos.x * Mathf.Abs(rb.velocity.x), rb.velocity.y); }
-                    ,
-                    _ => () => { Debug.Log("Z-axis rotation values are expected to be either 0 or 90 degrees"); }
-                    ,
-                };
-            })
-            .Subscribe(action => action.Invoke());
-    }
-
-    private IDisposable ManageTeleport(Collider2D trigger, Rigidbody2D rb, Vector2 ballSpeed)
-    {
-        return trigger.OnTriggerEnter2DAsObservable()
-            .Where(collider => collider.isTrigger)
-            .AsUnitObservable()
-            .Select<Unit, Action>(_ => () =>
-            {
-                rb.position = Vector2.zero;
-                rb.velocity = new Vector2(Mathf.Sign(rb.velocity.x) * Mathf.Abs(ballSpeed.x), Mathf.Sign(rb.velocity.y) * Mathf.Abs(ballSpeed.y));
-            })
-            .Subscribe(action => action.Invoke());
-    }
-
-    private void OnDestroy()
-    {
-        _compositeDisposable.Dispose();
-    }
-
-    private IDisposable Test(Collider2D trigger, Rigidbody2D rb, Vector2 ballSpeed, float speedMultiplier)
+    private IDisposable ManageCollisions(Collider2D trigger, Rigidbody2D rb, Vector2 ballSpeed, float speedMultiplier)
     {
         return trigger.OnTriggerEnter2DAsObservable()
             .Select<Collider2D, Action>(collider =>
@@ -118,4 +73,9 @@ public class BallMotionControl : MonoBehaviour
             var unitPosX = Mathf.Sign(rb.position.x);
             rb.velocity = speedMultiplier * new Vector2((-1) * unitPosX * Mathf.Abs(rb.velocity.x), rb.velocity.y);
         };
+
+    private void OnDestroy()
+    {
+        _compositeDisposable.Dispose();
+    }
 }
