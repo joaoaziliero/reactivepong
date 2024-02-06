@@ -29,13 +29,16 @@ public class BallMotionControl : MonoBehaviour
 
     private void Start()
     {
-        ManageCollisions(_collider, _rigidBody)
-            .AddTo(_compositeDisposable);
-        ManageTeleport(_collider, _rigidBody)
+        //ManageCollisions(_collider, _rigidBody, _gameplayParameters.BallSpeedMultiplier.Invoke())
+        //    .AddTo(_compositeDisposable);
+        //ManageTeleport(_collider, _rigidBody, _gameplayParameters.BallSpeed.Invoke())
+        //    .AddTo(_compositeDisposable);
+
+        Test(_collider, _rigidBody, _gameplayParameters.BallSpeed.Invoke(), _gameplayParameters.BallSpeedMultiplier.Invoke())
             .AddTo(_compositeDisposable);
     }
 
-    private IDisposable ManageCollisions(Collider2D trigger, Rigidbody2D rb)
+    private IDisposable ManageCollisions(Collider2D trigger, Rigidbody2D rb, float speedMultiplier)
     {
         return trigger.OnTriggerEnter2DAsObservable()
             .Where(collider => !collider.isTrigger)
@@ -46,9 +49,9 @@ public class BallMotionControl : MonoBehaviour
 
                 return orthogonality switch
                 {
-                    0 => () => { rb.velocity = new Vector2(rb.velocity.x, (-1) * unitPos.y * Mathf.Abs(rb.velocity.y)); }
+                    0 => () => { rb.velocity = speedMultiplier * new Vector2(rb.velocity.x, (-1) * unitPos.y * Mathf.Abs(rb.velocity.y)); }
                     ,
-                    90 => () => { rb.velocity = new Vector2((-1) * unitPos.x * Mathf.Abs(rb.velocity.x), rb.velocity.y); }
+                    90 => () => { rb.velocity = speedMultiplier * new Vector2((-1) * unitPos.x * Mathf.Abs(rb.velocity.x), rb.velocity.y); }
                     ,
                     _ => () => { Debug.Log("Z-axis rotation values are expected to be either 0 or 90 degrees"); }
                     ,
@@ -57,12 +60,16 @@ public class BallMotionControl : MonoBehaviour
             .Subscribe(action => action.Invoke());
     }
 
-    private IDisposable ManageTeleport(Collider2D trigger, Rigidbody2D rb)
+    private IDisposable ManageTeleport(Collider2D trigger, Rigidbody2D rb, Vector2 ballSpeed)
     {
         return trigger.OnTriggerEnter2DAsObservable()
             .Where(collider => collider.isTrigger)
             .AsUnitObservable()
-            .Select<Unit, Action>(_ => () => { rb.position = Vector2.zero; })
+            .Select<Unit, Action>(_ => () =>
+            {
+                rb.position = Vector2.zero;
+                rb.velocity = new Vector2(Mathf.Sign(rb.velocity.x) * Mathf.Abs(ballSpeed.x), Mathf.Sign(rb.velocity.y) * Mathf.Abs(ballSpeed.y));
+            })
             .Subscribe(action => action.Invoke());
     }
 
@@ -70,4 +77,45 @@ public class BallMotionControl : MonoBehaviour
     {
         _compositeDisposable.Dispose();
     }
+
+    private IDisposable Test(Collider2D trigger, Rigidbody2D rb, Vector2 ballSpeed, float speedMultiplier)
+    {
+        return trigger.OnTriggerEnter2DAsObservable()
+            .Select<Collider2D, Action>(collider =>
+            {
+                return collider switch
+                {
+                    var col when col.isTrigger => () => Teleport(rb, ballSpeed)
+                    ,
+                    var col when !col.isTrigger && col.transform.rotation.eulerAngles.z == 0 => () => ReflectVerticalVelocity(rb, speedMultiplier)
+                    ,
+                    var col when !col.isTrigger && col.transform.rotation.eulerAngles.z == 90 => () => ReflectHorizontalVelocity(rb, speedMultiplier)
+                    ,
+                    _ => () => { }
+                    ,
+                };
+            })
+            .Subscribe(action => action.Invoke());
+    }
+
+    private readonly Action<Rigidbody2D, Vector2> Teleport =
+        (rb, ballSpeed) =>
+        {
+            rb.position = Vector2.zero;
+            rb.velocity = new Vector2(Mathf.Sign(rb.velocity.x) * Mathf.Abs(ballSpeed.x), Mathf.Sign(rb.velocity.y) * Mathf.Abs(ballSpeed.y));
+        };
+
+    private readonly Action<Rigidbody2D, float> ReflectVerticalVelocity =
+        (rb, speedMultiplier) =>
+        {
+            var unitPosY = Mathf.Sign(rb.position.y);
+            rb.velocity = speedMultiplier * new Vector2(rb.velocity.x, (-1) * unitPosY * Mathf.Abs(rb.velocity.y));
+        };
+
+    private readonly Action<Rigidbody2D, float> ReflectHorizontalVelocity =
+        (rb, speedMultiplier) =>
+        {
+            var unitPosX = Mathf.Sign(rb.position.x);
+            rb.velocity = speedMultiplier * new Vector2((-1) * unitPosX * Mathf.Abs(rb.velocity.x), rb.velocity.y);
+        };
 }
