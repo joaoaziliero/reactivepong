@@ -33,6 +33,5 @@ public class SO_GameplayParameters : ScriptableObject
         LeftmostPlayerAxisName = () => _leftmostPlayerAxisName;
         RightmostPlayerAxisName = () => _rightmostPlayerAxisName;
         MaxPoints = () => Mathf.Abs(_maxPoints);
-        
     }
 }
