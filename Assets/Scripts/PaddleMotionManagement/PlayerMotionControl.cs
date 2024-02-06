@@ -27,15 +27,15 @@ public class PlayerMotionControl : MonoBehaviour
     {
         ManageAxisInput(_leftmostPlayerTransform,
             _gameplayParameters.PlayerPaddleSpeed.Invoke(),
-            () => Input.GetAxis(_gameplayParameters.LeftmostPlayerAxisName.Invoke()))
+            Input.GetAxis, _gameplayParameters.LeftmostPlayerAxisName.Invoke())
             .AddTo(_compositeDisposable);
         ManageAxisInput(_rightmostPlayerTransform,
             _gameplayParameters.PlayerPaddleSpeed.Invoke(),
-            () => Input.GetAxis(_gameplayParameters.RightmostPlayerAxisName.Invoke()))
+            Input.GetAxis, _gameplayParameters.RightmostPlayerAxisName.Invoke())
             .AddTo(_compositeDisposable);
     }
 
-    private IDisposable ManageAxisInput(Transform playerPaddle, float paddleSpeed, Func<float> AxisInput)
+    private IDisposable ManageAxisInput(Transform playerPaddle, float paddleSpeed, Func<string, float> GetAxis, string AxisName)
     {
         return Observable
             .EveryUpdate()
@@ -43,7 +43,7 @@ public class PlayerMotionControl : MonoBehaviour
             .Select<Unit, Action>(_ =>
             {
                 var currentPos = playerPaddle.position;
-                var y = Mathf.Clamp(currentPos.y + AxisInput.Invoke() * paddleSpeed * Time.deltaTime, -4.5f, +4.5f);
+                var y = Mathf.Clamp(currentPos.y + paddleSpeed * Time.deltaTime * GetAxis(AxisName), -4.5f, +4.5f);
                 return () => { playerPaddle.position = new Vector3(currentPos.x, y, 0); };
             })
             .Subscribe(action => action.Invoke());
