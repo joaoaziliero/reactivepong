@@ -39,14 +39,12 @@ public class PlayerMotionControl : MonoBehaviour
     {
         return Observable
             .EveryUpdate()
-            .AsUnitObservable()
-            .Select<Unit, Action>(_ =>
+            .Subscribe(_ =>
             {
                 var currentPos = playerPaddle.position;
                 var y = Mathf.Clamp(currentPos.y + paddleSpeed * Time.deltaTime * GetAxis(AxisName), -4.5f, +4.5f);
-                return () => { playerPaddle.position = new Vector3(currentPos.x, y, 0); };
-            })
-            .Subscribe(action => action.Invoke());
+                playerPaddle.position = new Vector3(currentPos.x, y, 0);
+            });
     }
 
     private void OnDestroy()
