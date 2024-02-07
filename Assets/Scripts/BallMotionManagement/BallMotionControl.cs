@@ -44,7 +44,7 @@ public class BallMotionControl : MonoBehaviour
                     ,
                     var col when !col.isTrigger && col.transform.rotation.eulerAngles.z == 0 => () => ReflectVerticalVelocity(rb, speedMultiplier)
                     ,
-                    var col when !col.isTrigger && col.transform.rotation.eulerAngles.z == 90 => () => ReflectHorizontalVelocity(rb, speedMultiplier)
+                    var col when !col.isTrigger && col.attachedRigidbody.rotation == 90 => () => ReflectHorizontalVelocity(rb, speedMultiplier)
                     ,
                     _ => () => { }
                     ,
