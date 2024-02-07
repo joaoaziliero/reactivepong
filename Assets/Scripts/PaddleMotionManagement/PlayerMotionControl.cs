@@ -37,7 +37,8 @@ public class PlayerMotionControl : MonoBehaviour
 
     private void ManageAxisInput(Rigidbody2D playerPaddle, float paddleSpeed, Func<string, float> GetAxis, string AxisName, CompositeDisposable disposables)
     {
-        Observable.EveryUpdate().Subscribe(_ => GetAxis(AxisName)).AddTo(disposables);
+        Observable.EveryUpdate().Select<long, Action>(_ => () => GetAxis(AxisName))
+            .Subscribe(action => action.Invoke()).AddTo(disposables);
 
         GetAxis.ObserveEveryValueChanged(InputFunction => InputFunction(AxisName))
             .Select<float, Action>(inputReading => () => { playerPaddle.velocity = inputReading * paddleSpeed * Vector2.up; })
