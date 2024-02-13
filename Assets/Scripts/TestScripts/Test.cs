@@ -9,7 +9,9 @@ public class Test : MonoBehaviour
 
     private void Start()
     {
-        _scriptableTest.SetNumber(1);
+        var action = _scriptableTest.SetNumber;
+        action(10);
+        action(_scriptableTest.Number.Invoke() + 1);
         Invoke(nameof(LoadTestScene), 5);
     }
 
