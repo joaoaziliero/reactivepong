@@ -13,6 +13,8 @@ public class BallMotionControl : MonoBehaviour
     private Rigidbody2D _rigidBody;
 
     [SerializeField] private SO_GameplayParameters _gameplayParameters;
+    
+    private void SetBallInMotion() { _rigidBody.velocity = _gameplayParameters.BallSpeed.Invoke(); }
 
     private void Awake()
     {
@@ -24,7 +26,7 @@ public class BallMotionControl : MonoBehaviour
         _compositeDisposable = new CompositeDisposable();
         _collider = GetComponent<Collider2D>();
         _rigidBody = GetComponent<Rigidbody2D>();
-        _rigidBody.velocity = _gameplayParameters.BallSpeed.Invoke();
+        Invoke(nameof(SetBallInMotion), 5);
     }
 
     private void Start()
