@@ -15,6 +15,11 @@ public class SO_Test : ScriptableObject
     private SO_Test()
     {
         Number = () => _number;
-        SetNumber = SetAndResetSetter();
+        SetNumber = @in => { Setter(ref _number, 0, @in); SetNumber = null; };
+    }
+
+    private void Setter<T>(ref T origin, T discriminator, T @in)
+    {
+        if (origin.Equals(discriminator)) { origin = @in; }
     }
 }
