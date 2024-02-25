@@ -48,10 +48,11 @@ public class BallMotionControl : MonoBehaviour
                     ,
                     var col when !col.isTrigger && col.transform.rotation.eulerAngles.z == 90 => () => ReflectHorizontalVelocity(rb, speedMultiplier)
                     ,
-                    _ => () => { }
+                    _ => null
                     ,
                 };
             })
+            .Where(action => action != null)
             .Subscribe(action => action.Invoke());
     }
 
