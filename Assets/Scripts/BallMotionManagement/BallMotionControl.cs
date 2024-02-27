@@ -24,7 +24,7 @@ public class BallMotionControl : MonoBehaviour
         trigger.OnTriggerEnter2DAsObservable()
             .Where(collider => !collider.isTrigger)
             .Select(collider => SignChanger(collider.transform.rotation.eulerAngles.z))
-            .Subscribe(signChanger => ChangeVelocity(rb, speedMultiplier, signChanger))
+            .Subscribe(sign => ChangeVelocity(rb, speedMultiplier, new Vector2(-sign, sign)))
             .AddTo(this);
 
         trigger.OnTriggerEnter2DAsObservable()
@@ -33,12 +33,8 @@ public class BallMotionControl : MonoBehaviour
             .AddTo(this);
     }
 
-    private Vector2 SignChanger(float angle) => angle switch
-    {
-        0 => new Vector2(+1, -1),
-        90 => new Vector2(-1, +1),
-        _ => throw new ArgumentOutOfRangeException("Colliders should correspond to a rotation of either zero or ninety degrees."),
-    };
+    private readonly Func<float, float> SignChanger =
+        (angle) => Mathf.Sin(angle * Mathf.Deg2Rad) - Mathf.Cos(angle * Mathf.Deg2Rad);
 
     private readonly Action<Rigidbody2D> ResetPosition = (rb) => { rb.position = Vector2.zero; };
 
